@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D6EFF5"/>
+      <stop offset="100%" style="stop-color:#B8E4D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <rect x="450" y="80" width="300" height="200" rx="16" fill="#FFFFFF" opacity="0.9" stroke="#6BBDD4" stroke-width="2"/>
+  <rect x="480" y="110" width="120" height="10" rx="5" fill="#E8F542"/>
+  <rect x="480" y="140" width="200" height="8" rx="4" fill="#5A7A85" opacity="0.4"/>
+  <rect x="480" y="165" width="180" height="8" rx="4" fill="#5A7A85" opacity="0.4"/>
+  <rect x="480" y="190" width="220" height="8" rx="4" fill="#5A7A85" opacity="0.3"/>
+  <rect x="480" y="240" width="80" height="32" rx="8" fill="#3A9AB5" opacity="0.2"/>
+  <text x="480" y="262" font-family="system-ui, sans-serif" font-size="14" fill="#3A9AB5" font-weight="600">Videollamada</text>
+  <circle cx="200" cy="150" r="70" fill="#6BBDD4" opacity="0.15"/>
+  <circle cx="200" cy="150" r="45" fill="#6BBDD4" opacity="0.25"/>
+  <rect x="170" y="120" width="60" height="60" rx="10" fill="#3A9AB5" opacity="0.3"/>
+  <circle cx="200" cy="150" r="12" fill="#E8F542"/>
+  <text x="400" y="400" font-family="system-ui, sans-serif" font-size="22" fill="#3A9AB5" text-anchor="middle" font-weight="600">Terapia Online</text>
+  <text x="400" y="430" font-family="system-ui, sans-serif" font-size="14" fill="#5A7A85" text-anchor="middle">servicio-online.jpg • 800x500px</text>
+  <circle cx="120" cy="80" r="10" fill="#E8F542" opacity="0.6"/>
+  <circle cx="80" cy="120" r="6" fill="#E8F542" opacity="0.5"/>
+  <circle cx="150" cy="180" r="8" fill="#E8F542" opacity="0.4"/>
+</svg>
