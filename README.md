@@ -372,3 +372,4 @@ La carpeta `docs/` contiene documentación de etapas previas del proyecto (por e
 - GitHub: [@elbrujo325](https://github.com/elbrujo325)
 - LinkedIn: [linkedin.com/in/henry-paolo-alfaro-sotil](https://linkedin.com/in/henry-paolo-alfaro-sotil)
 - Email: paolosotil97@gmail.com
+  Proyecto entregado y administrado por María Fernanda.
