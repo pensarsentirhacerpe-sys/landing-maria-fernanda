@@ -41,7 +41,7 @@ service cloud.firestore {
     // ============================================================
     match /blogComments/{docId} {
       // Lectura pública: solo comentarios aprobados para el post específico
-      allow read: if true; // TEMPORARILY PERMISSIVE FOR DEBUGGING
+      allow read: if resource.data.aprobado == true;
 
       // Creación pública: cualquiera puede enviar un comentario
       allow create: if request.auth == null
@@ -62,7 +62,9 @@ service cloud.firestore {
     // HELPER FUNCTIONS
     // ============================================================
     function isAdmin() {
-      return true; // TEMPORARILY ALLOW ALL FOR DEBUGGING
+      return request.auth != null
+          && (request.auth.token.email.toLowerCase() == 'pensarsentirhacer.pe@gmail.com'
+              || request.auth.token.email.toLowerCase() == 'paolosotil97@gmail.com');
     }
 
   }
