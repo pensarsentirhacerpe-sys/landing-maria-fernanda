@@ -1295,15 +1295,14 @@
 
           // Renderizar comentarios
           if (comments.length === 0) {
+            console.log("loadComments: setting empty comments");
             commentsGrid.innerHTML = `
               <div class="empty-comments">
                 <p>Aún no hay comentarios. Sé el primero en compartir tu reflexión.</p>
               </div>
-            console.log("loadComments: setting empty comments");
-            `;
           } else {
-            commentsGrid.innerHTML = comments.map(comment => {
               const fecha = comment.fecha?.toDate ? formatDate(comment.fecha.toDate()) : formatDate(comment.fecha);
+            console.log("loadComments: building HTML for", comments.length, "comments");
               const nombreDisplay = comment.anonimo
                 ? (comment.nombre ? comment.nombre.charAt(0) + '.' : 'Anónimo')
                 : (comment.nombre || 'Anónimo');
@@ -1312,7 +1311,6 @@
                 <div class="comment-card">
                   <div class="comment-header">
                     <span class="comment-author">— ${nombreDisplay}</span>
-            console.log("loadComments: setting comments:", comments.length);
                     <time class="comment-date">${fecha}</time>
                   </div>
                   <p class="comment-text">${escapeHtml(comment.texto)}</p>
