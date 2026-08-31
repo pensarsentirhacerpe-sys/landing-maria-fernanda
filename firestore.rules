@@ -63,10 +63,8 @@ service cloud.firestore {
     // ============================================================
     function isAdmin() {
       return request.auth != null
-          && request.auth.token.email.toLowerCase() in [
-            'pensarsentirhacer.pe@gmail.com',
-            'paolosotil97@gmail.com'
-          ];
+          && (request.auth.token.email.toLowerCase() == 'pensarsentirhacer.pe@gmail.com'
+              || request.auth.token.email.toLowerCase() == 'paolosotil97@gmail.com');
     }
 
   }
