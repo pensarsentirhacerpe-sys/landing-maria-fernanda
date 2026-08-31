@@ -971,22 +971,6 @@
 .comments-section > .container > *:last-child {
   margin-bottom: 0;
 }
-
-/* DEBUG STYLES - REMOVE IN PRODUCTION */
-.comments-section {
-  background-color: #ff0 !important; /* Bright yellow */
-  border: 5px solid #f00 !important; /* Thick red border */
-  min-height: 200px !important;
-  padding: 20px !important;
-}
-
-/* Also make sure inner elements are visible */
-.comments-section > .container > * {
-  background-color: rgba(255,255,255,0.8) !important;
-  border: 1px solid #000 !important;
-  margin: 10px !important;
-  padding: 10px !important;
-}
   </style>
 </head>
 <body>
@@ -1359,12 +1343,24 @@
 
             // Resolve the promise after we've processed the first snapshot
             resolve(unsubscribe);
+          }, (error) => {
+            console.error('Error en onSnapshot de comentarios:', error);
+            commentsCount.textContent = 'Error al cargar comentarios';
+            commentsGrid.innerHTML = '<div class="error">Error al cargar comentarios. Intenta de nuevo más tarde.</div>';
+            resolve(unsubscribe); // resolve to avoid hanging promise
           });
         });
       } catch (error) {
         console.error('Error cargando comentarios:', error);
         commentsCount.textContent = 'Error al cargar comentarios';
         commentsGrid.innerHTML = '<div class="error">Error al cargar comentarios. Intenta de nuevo más tarde.</div>';
+      }
+    }
+
+    // Mostrar la sección de comentarios
+    function showCommentsSection() {
+      if (commentsSection) {
+        commentsSection.style.display = 'block';
       }
     }
 
@@ -1423,15 +1419,7 @@
       setTimeout(() => { commentToast.style.display = 'none'; }, 6000);
     }
 
-    // Mostrar la sección de comentarios
-    function showCommentsSection() {
-      console.log("showCommentsSection: commentsSection=", commentsSection, "current display=", window.getComputedStyle(commentsSection).display);
-      if (commentsSection) {
-        commentsSection.style.display = 'block';
-        console.log("showCommentsSection: after setting display=", commentsSection.style.display);
-      }
-    }
-
+    
     if (!postId) {
       showNotFound();
     } else {
@@ -1467,6 +1455,11 @@
           showRelated: true
         });
 
+        // Reinsert comments section that was overwritten by renderArticle
+        if (commentsSection) {
+          articleMain.appendChild(commentsSection);
+        }
+
         // Load related posts using shared module
         if (rendered && rendered.relatedSection && rendered.relatedGrid) {
           await loadRelatedPosts(db, data.categoria, id, rendered.relatedGrid, rendered.relatedSection);
@@ -1480,8 +1473,7 @@
         loadingSkeleton.style.display = 'none';
         articleMain.style.display = 'block';
 
-        console.log("showCommentsSection called");
-        showCommentsSection();
+                showCommentsSection();
 
       } catch (error) {
         console.error('Error loading post:', error);
