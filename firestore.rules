@@ -62,7 +62,9 @@ service cloud.firestore {
     // HELPER FUNCTIONS
     // ============================================================
     function isAdmin() {
-      return true; // For testing - remove in production
+      return request.auth != null
+    && (request.auth.token.email.toLowerCase() == 'pensarsentirhacer.pe@gmail.com'
+        || request.auth.token.email.toLowerCase() == 'paolosotil97@gmail.com');
     }
 
   }
