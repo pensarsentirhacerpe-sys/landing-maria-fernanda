@@ -702,6 +702,7 @@
         <nav class="admin-nav" role="tablist" aria-label="Secciones del panel">
           <button class="admin-nav-btn active" role="tab" aria-selected="true" data-tab="testimonios">Testimonios</button>
           <button class="admin-nav-btn" role="tab" aria-selected="false" data-tab="blog">Blog</button>
+          <button class="admin-nav-btn" role="tab" aria-selected="false" data-tab="comentarios">Comentarios</button>
         </nav>
         <div class="admin-user">
           <span id="adminUserEmail"></span>
@@ -789,6 +790,53 @@
           </table>
         </div>
       </section>
+
+      <!-- COMENTARIOS SECTION -->
+      <section class="admin-section" id="tab-comentarios" role="tabpanel" aria-labelledby="comentarios-tab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Gestión de Comentarios</h2>
+            <p class="section-subtitle">Revisa y aprueba los comentarios enviados por visitantes</p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="statCommentsPending">0</div>
+            <div class="stat-label">Pendientes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statCommentsApproved">0</div>
+            <div class="stat-label">Aprobados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statCommentsRejected">0</div>
+            <div class="stat-label">Rechazados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statCommentsTotal">0</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="admin-table" role="table">
+            <thead>
+              <tr>
+                <th scope="col">Autor</th>
+                <th scope="col">Artículo</th>
+                <th scope="col">Comentario</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="commentsTableBody">
+              <tr><td colspan="6" class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M9 12l3-3m-3 3 3 3M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9"/></svg><p>Cargando comentarios...</p></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -822,6 +870,23 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" id="cancelDeleteBtn">Cancelar</button>
         <button class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL COMENTARIO DETALLE -->
+  <div class="modal-overlay" id="commentModal" role="dialog" aria-modal="true" aria-labelledby="commentModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="commentModalTitle">Ver comentario</h3>
+        <button class="modal-close" id="closeCommentModal" aria-label="Cerrar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="modal-body" id="commentModalBody">
+        <!-- Contenido dinámico -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="commentModalRejectBtn">Rechazar</button>
+        <button class="btn btn-primary" id="commentModalApproveBtn">Aprobar</button>
       </div>
     </div>
   </div>
@@ -875,11 +940,25 @@
     const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 
+    // Comentarios elements
+    const commentsTableBody = document.getElementById('commentsTableBody');
+    const statCommentsPending = document.getElementById('statCommentsPending');
+    const statCommentsApproved = document.getElementById('statCommentsApproved');
+    const statCommentsRejected = document.getElementById('statCommentsRejected');
+    const statCommentsTotal = document.getElementById('statCommentsTotal');
+    const commentModal = document.getElementById('commentModal');
+    const commentModalBody = document.getElementById('commentModalBody');
+    const closeCommentModal = document.getElementById('closeCommentModal');
+    const commentModalApproveBtn = document.getElementById('commentModalApproveBtn');
+    const commentModalRejectBtn = document.getElementById('commentModalRejectBtn');
+
     let currentTestimonioId = null;
+    let currentCommentId = null;
     let currentDeleteId = null;
-    let currentDeleteType = null; // 'testimonio' o 'blog'
+    let currentDeleteType = null; // 'testimonio', 'blog', o 'comment'
     let unsubscribeTestimonios = null;
     let unsubscribeBlog = null;
+    let unsubscribeComments = null;
 
     // --- TOAST ---
     function showToast(message, type = 'info') {
@@ -969,11 +1048,21 @@
         console.error('Error blog:', error);
         showToast('Error cargando blog', 'error');
       });
+
+      // Comentarios real-time
+      const qComments = query(collection(db, 'blogComments'), orderBy('fecha', 'desc'));
+      unsubscribeComments = onSnapshot(qComments, (snapshot) => {
+        renderComments(snapshot.docs);
+      }, (error) => {
+        console.error('Error comentarios:', error);
+        showToast('Error cargando comentarios', 'error');
+      });
     }
 
     function stopListeners() {
       if (unsubscribeTestimonios) unsubscribeTestimonios();
       if (unsubscribeBlog) unsubscribeBlog();
+      if (unsubscribeComments) unsubscribeComments();
     }
 
     // --- RENDER TESTIMONIOS ---
@@ -1097,6 +1186,10 @@
     closeTestimonioModal.addEventListener('click', closeTestimonioModalFn);
     testimonioModal.addEventListener('click', (e) => { if (e.target === testimonioModal) closeTestimonioModalFn(); });
 
+    // --- COMENTARIO MODAL LISTENERS ---
+    closeCommentModal.addEventListener('click', closeCommentModalFn);
+    commentModal.addEventListener('click', (e) => { if (e.target === commentModal) closeCommentModalFn(); });
+
     async function approveTestimonio(id) {
       try {
         await updateDoc(doc(db, 'testimonios', id), { aprobado: true, rechazado: false, fechaAprobacion: serverTimestamp() });
@@ -1121,6 +1214,10 @@
 
     modalApproveBtn.addEventListener('click', () => { if (currentTestimonioId) approveTestimonio(currentTestimonioId); });
     modalRejectBtn.addEventListener('click', () => { if (currentTestimonioId) rejectTestimonio(currentTestimonioId); });
+
+    // --- COMENTARIO MODAL BUTTONS ---
+    commentModalApproveBtn.addEventListener('click', () => { if (currentCommentId) approveComment(currentCommentId); });
+    commentModalRejectBtn.addEventListener('click', () => { if (currentCommentId) rejectComment(currentCommentId); });
 
     // --- BLOG ---
     newPostBtn.addEventListener('click', () => {
@@ -1177,6 +1274,144 @@
       blogTableBody.querySelectorAll('[data-action="delete"]').forEach(btn => {
         btn.addEventListener('click', () => confirmDelete(btn.dataset.id, 'blog'));
       });
+    }
+
+    // --- RENDER COMENTARIOS ---
+    function renderComments(docs) {
+      let pending = 0, approved = 0, rejected = 0;
+
+      if (docs.length === 0) {
+        commentsTableBody.innerHTML = `
+          <tr><td colspan="6" class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M9 12l3-3m-3 3 3 3M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9"/></svg>
+            <p>No hay comentarios aún</p>
+          </td></tr>
+        `;
+        updateCommentStats(0, 0, 0);
+        return;
+      }
+
+      const rows = docs.map(docSnap => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+        const fecha = data.fecha?.toDate ? formatDate(data.fecha.toDate()) : '—';
+
+        if (data.aprobado === true) approved++;
+        else if (data.aprobado === false && data.rechazado === true) rejected++;
+        else pending++;
+
+        const nombre = data.anonimo ? (data.nombre ? data.nombre.charAt(0) + '.' : 'Anónimo') : (data.nombre || 'Anónimo');
+
+        // Get blog post title for reference
+        const postTitle = data.postId ? `[Post ID: ${data.postId}]` : 'Post desconocido';
+
+        return `
+          <tr data-id="${id}">
+            <td>${escapeHtml(nombre)}${data.anonimo ? ' <span style="font-size:11px;opacity:0.6;">(anónimo)</span>' : ''}</td>
+            <td>${escapeHtml(postTitle)}</td>
+            <td class="text-preview" title="${escapeHtml(data.texto)}">${escapeHtml(data.texto)}</td>
+            <td>${fecha}</td>
+            <td>
+              <span class="badge ${data.aprobado ? 'badge-approved' : (data.rechazado ? 'badge-rejected' : 'badge-pending')}">
+                ${data.aprobado ? 'Aprobado' : (data.rechazado ? 'Rechazado' : 'Pendiente')}
+              </span>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="icon-btn" data-action="view" data-id="${id}" aria-label="Ver comentario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11-8-11-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                ${!data.aprobado ? `
+                  <button class="icon-btn" data-action="approve" data-id="${id}" aria-label="Aprobar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button>
+                  <button class="icon-btn danger" data-action="reject" data-id="${id}" aria-label="Rechazar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                ` : ''}
+                <button class="icon-btn danger" data-action="delete" data-id="${id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2 2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      commentsTableBody.innerHTML = rows;
+      updateCommentStats(pending, approved, rejected);
+
+      // Event listeners for buttons
+      commentsTableBody.querySelectorAll('[data-action="view"]').forEach(btn => {
+        btn.addEventListener('click', () => openCommentModal(btn.dataset.id, docs.find(d => d.id === btn.dataset.id).data()));
+      });
+      commentsTableBody.querySelectorAll('[data-action="approve"]').forEach(btn => {
+        btn.addEventListener('click', () => approveComment(btn.dataset.id));
+      });
+      commentsTableBody.querySelectorAll('[data-action="reject"]').forEach(btn => {
+        btn.addEventListener('click', () => rejectComment(btn.dataset.id));
+      });
+      commentsTableBody.querySelectorAll('[data-action="delete"]').forEach(btn => {
+        btn.addEventListener('click', () => confirmDelete(btn.dataset.id, 'comment'));
+      });
+    }
+
+    function updateCommentStats(pending, approved, rejected) {
+      statCommentsPending.textContent = pending;
+      statCommentsApproved.textContent = approved;
+      statCommentsRejected.textContent = rejected;
+      statCommentsTotal.textContent = pending + approved + rejected;
+    }
+
+    // --- COMENTARIO MODAL ---
+    function openCommentModal(id, data) {
+      currentCommentId = id;
+      const fecha = data.fecha?.toDate ? formatDate(data.fecha.toDate()) : '—';
+      const nombre = data.anonimo ? (data.nombre ? data.nombre.charAt(0) + '.' : 'Anónimo') : (data.nombre || 'Anónimo');
+
+      commentModalBody.innerHTML = `
+        <div style="display: grid; gap: 16px;">
+          <div class="info-row">
+            <strong>Autor:</strong> <span>${escapeHtml(nombre)}${data.anonimo ? ' (anónimo)' : ''}</span>
+          </div>
+          <div class="info-row">
+            <strong>Fecha:</strong> <span>${fecha}</span>
+          </div>
+          <div class="info-row">
+            <strong>Comentario:</strong>
+            <p style="margin-top: 8px; padding: 16px; background: var(--cream); border-radius: 12px; line-height: 1.7; white-space: pre-wrap;">${escapeHtml(data.texto)}</p>
+          </div>
+        </div>
+      `;
+
+      const isApproved = data.aprobado === true;
+      commentModalApproveBtn.textContent = isApproved ? 'Ya aprobado' : 'Aprobar';
+      commentModalApproveBtn.disabled = isApproved;
+      commentModalRejectBtn.textContent = isApproved ? 'Rechazar' : 'Rechazar';
+      commentModalRejectBtn.disabled = isApproved;
+
+      commentModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCommentModalFn() {
+      commentModal.classList.remove('active');
+      document.body.style.overflow = '';
+      currentCommentId = null;
+    }
+
+    async function approveComment(id) {
+      try {
+        await updateDoc(doc(db, 'blogComments', id), { aprobado: true, rechazado: false });
+        showToast('Comentario aprobado ✓', 'success');
+        closeCommentModalFn();
+      } catch (error) {
+        console.error('Error aprobando comentario:', error);
+        showToast('Error al aprobar comentario', 'error');
+      }
+    }
+
+    async function rejectComment(id) {
+      try {
+        await updateDoc(doc(db, 'blogComments', id), { aprobado: false, rechazado: true });
+        showToast('Comentario rechazado', 'info');
+        closeCommentModalFn();
+      } catch (error) {
+        console.error('Error rechazando comentario:', error);
+        showToast('Error al rechazar comentario', 'error');
+      }
     }
 
     // --- DELETE CONFIRMATION ---
