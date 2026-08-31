@@ -955,20 +955,20 @@
 }
 
 /* Fix for comments section layout */
-.comments-section > .container {
+#commentsSection > .container {
   display: block;           /* Override Flexbox to normal block flow */
   max-width: 1200px;
   margin: 0 auto;
 }
 
 /* Ensure children stack vertically with proper spacing */
-.comments-section > .container > * {
+#commentsSection > .container > * {
   width: 100%;              /* Full width */
   margin-bottom: var(--space-md); /* Space between elements */
 }
 
 /* Remove margin from last element */
-.comments-section > .container > *:last-child {
+#commentsSection > .container > *:last-child {
   margin-bottom: 0;
 }
   </style>
