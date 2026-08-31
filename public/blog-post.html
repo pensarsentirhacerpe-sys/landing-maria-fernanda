@@ -1304,44 +1304,47 @@
           orderBy('fecha', 'asc')
         );
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-          console.log("loadComments: snapshot received", snapshot.size);
-          const comments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Wait for the initial snapshot to resolve
+        await new Promise((resolve) => {
+          const unsubscribe = onSnapshot(q, (snapshot) => {
+            console.log("loadComments: snapshot received", snapshot.size);
+            const comments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-          // Actualizar contador
-          commentsCount.textContent = `${comments.length} ${comments.length === 1 ? 'comentario' : 'comentarios'}`;
+            // Actualizar contador
+            commentsCount.textContent = `${comments.length} ${comments.length === 1 ? 'comentario' : 'comentarios'}`;
 
-          // Renderizar comentarios
-          if (comments.length === 0) {
-            console.log("loadComments: setting empty comments");
-            commentsGrid.innerHTML = `
-              <div class="empty-comments">
-                <p>Aún no hay comentarios. Sé el primero en compartir tu reflexión.</p>
-              </div>
-            `;
-          } else {
-              commentsGrid.innerHTML = comments.map(comment => {
-                const fecha = comment.fecha?.toDate ? formatDate(comment.fecha.toDate()) : formatDate(comment.fecha);
-                console.log("loadComments: building HTML for", comments.length, "comments");
-                const nombreDisplay = comment.anonimo
-                  ? (comment.nombre ? comment.nombre.charAt(0) + '.' : 'Anónimo')
-                  : (comment.nombre || 'Anónimo');
+            // Renderizar comentarios
+            if (comments.length === 0) {
+              console.log("loadComments: setting empty comments");
+              commentsGrid.innerHTML = `
+                <div class="empty-comments">
+                  <p>Aún no hay comentarios. Sé el primero en compartir tu reflexión.</p>
+                </div>
+              `;
+            } else {
+                commentsGrid.innerHTML = comments.map(comment => {
+                  const fecha = comment.fecha?.toDate ? formatDate(comment.fecha.toDate()) : formatDate(comment.fecha);
+                  console.log("loadComments: building HTML for", comments.length, "comments");
+                  const nombreDisplay = comment.anonimo
+                    ? (comment.nombre ? comment.nombre.charAt(0) + '.' : 'Anónimo')
+                    : (comment.nombre || 'Anónimo');
 
-                return `
-                  <div class="comment-card">
-                    <div class="comment-header">
-                      <span class="comment-author">— ${nombreDisplay}</span>
-                      <time class="comment-date">${fecha}</time>
+                  return `
+                    <div class="comment-card">
+                      <div class="comment-header">
+                        <span class="comment-author">— ${nombreDisplay}</span>
+                        <time class="comment-date">${fecha}</time>
+                      </div>
+                      <p class="comment-text">${escapeHtml(comment.texto)}</p>
                     </div>
-                    <p class="comment-text">${escapeHtml(comment.texto)}</p>
-                  </div>
-                `;
-              }).join('');
-          }
-        });
+                  `;
+                }).join('');
+            }
 
-        // Guardar la función de unsubscription para limpieza si es necesario
-        window.unsubscribeComments = unsubscribe;
+            // Resolve the promise after we've processed the first snapshot
+            resolve(unsubscribe);
+          });
+        });
       } catch (error) {
         console.error('Error cargando comentarios:', error);
         commentsCount.textContent = 'Error al cargar comentarios';
