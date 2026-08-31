@@ -971,6 +971,22 @@
 .comments-section > .container > *:last-child {
   margin-bottom: 0;
 }
+
+/* DEBUG STYLES - REMOVE IN PRODUCTION */
+.comments-section {
+  background-color: #ff0 !important; /* Bright yellow */
+  border: 5px solid #f00 !important; /* Thick red border */
+  min-height: 200px !important;
+  padding: 20px !important;
+}
+
+/* Also make sure inner elements are visible */
+.comments-section > .container > * {
+  background-color: rgba(255,255,255,0.8) !important;
+  border: 1px solid #000 !important;
+  margin: 10px !important;
+  padding: 10px !important;
+}
   </style>
 </head>
 <body>
