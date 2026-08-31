@@ -1388,8 +1388,10 @@
 
     // Mostrar la sección de comentarios
     function showCommentsSection() {
+      console.log("showCommentsSection: commentsSection=", commentsSection, "current display=", window.getComputedStyle(commentsSection).display);
       if (commentsSection) {
         commentsSection.style.display = 'block';
+        console.log("showCommentsSection: after setting display=", commentsSection.style.display);
       }
     }
 
