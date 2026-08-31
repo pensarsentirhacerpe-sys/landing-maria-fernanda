@@ -1247,6 +1247,146 @@
     const params = new URLSearchParams(window.location.search);
     const postId = params.get('id');
 
+    // --- COMENTARIOS ---
+    const commentsSection = document.getElementById('commentsSection');
+    const commentsGrid = document.getElementById('commentsGrid');
+    const commentsCount = document.getElementById('commentsCount');
+    const commentForm = document.getElementById('commentForm');
+    const commentToast = document.getElementById('commentFormToast');
+    const commentCharCount = document.getElementById('commentCharCount');
+    const commentTexto = document.getElementById('commentTexto');
+    const submitCommentBtn = document.getElementById('submitComment');
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Contador de caracteres
+    if (commentTexto && commentCharCount) {
+      commentTexto.addEventListener('input', () => {
+        commentCharCount.textContent = commentTexto.value.length;
+      });
+    }
+
+    // Cargar comentarios aprobados para este post
+    async function loadComments() {
+      if (!commentsGrid || !postId) return;
+
+      try {
+        const q = query(
+          collection(db, 'blogComments'),
+          where('postId', '==', postId),
+          where('aprobado', '==', true),
+          orderBy('fecha', 'asc')
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const comments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+          // Actualizar contador
+          commentsCount.textContent = `${comments.length} ${comments.length === 1 ? 'comentario' : 'comentarios'}`;
+
+          // Renderizar comentarios
+          if (comments.length === 0) {
+            commentsGrid.innerHTML = `
+              <div class="empty-comments">
+                <p>Aún no hay comentarios. Sé el primero en compartir tu reflexión.</p>
+              </div>
+            `;
+          } else {
+            commentsGrid.innerHTML = comments.map(comment => {
+              const fecha = comment.fecha?.toDate ? formatDate(comment.fecha.toDate()) : formatDate(comment.fecha);
+              const nombreDisplay = comment.anonimo
+                ? (comment.nombre ? comment.nombre.charAt(0) + '.' : 'Anónimo')
+                : (comment.nombre || 'Anónimo');
+
+              return `
+                <div class="comment-card">
+                  <div class="comment-header">
+                    <span class="comment-author">— ${nombreDisplay}</span>
+                    <time class="comment-date">${fecha}</time>
+                  </div>
+                  <p class="comment-text">${escapeHtml(comment.texto)}</p>
+                </div>
+              `;
+            }).join('');
+          }
+        });
+
+        // Guardar la función de unsubscription para limpieza si es necesario
+        window.unsubscribeComments = unsubscribe;
+      } catch (error) {
+        console.error('Error cargando comentarios:', error);
+        commentsCount.textContent = 'Error al cargar comentarios';
+        commentsGrid.innerHTML = '<div class="error">Error al cargar comentarios. Intenta de nuevo más tarde.</div>';
+      }
+    }
+
+    // Manejar envío de nuevo comentario
+    if (commentForm) {
+      commentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(commentForm);
+        const data = {
+          postId: postId, // ID del artículo actual
+          nombre: formData.get('nombre')?.trim() || null,
+          anonimo: formData.get('anonimo') === 'true',
+          texto: formData.get('texto')?.trim(),
+          fecha: serverTimestamp(),
+          aprobado: false // Requiere moderación
+        };
+
+        // Validación
+        if (!data.texto || data.texto.length < 5) {
+          showCommentToast('El comentario debe tener al menos 5 caracteres', 'error');
+          return;
+        }
+
+        if (data.nombre && data.nombre.length > 100) {
+          showCommentToast('El nombre no puede exceder 100 caracteres', 'error');
+          return;
+        }
+
+        // Estado de envío
+        submitCommentBtn.disabled = true;
+        submitCommentBtn.querySelector('.btn-text').style.display = 'none';
+        submitCommentBtn.querySelector('.btn-loading').style.display = 'inline-flex';
+
+        try {
+          await addDoc(collection(db, 'blogComments'), data);
+          showCommentToast('¡Gracias! Tu comentario fue enviado para revisión. Se publicará tras ser aprobado.', 'success');
+          commentForm.reset();
+          commentCharCount.textContent = '0';
+        } catch (error) {
+          console.error('Error enviando comentario:', error);
+          showCommentToast('Hubo un error al enviar. Intenta de nuevo más tarde.', 'error');
+        } finally {
+          submitCommentBtn.disabled = false;
+          submitCommentBtn.querySelector('.btn-text').style.display = 'inline';
+          submitCommentBtn.querySelector('.btn-loading').style.display = 'none';
+        }
+      });
+    }
+
+    function showCommentToast(message, type) {
+      if (!commentToast) return;
+      commentToast.textContent = message;
+      commentToast.className = `form-toast ${type}`;
+      commentToast.style.display = 'block';
+      setTimeout(() => { commentToast.style.display = 'none'; }, 6000);
+    }
+
+    // Mostrar la sección de comentarios
+    function showCommentsSection() {
+      if (commentsSection) {
+        commentsSection.style.display = 'block';
+      }
+    }
+
     if (!postId) {
       showNotFound();
     } else {
