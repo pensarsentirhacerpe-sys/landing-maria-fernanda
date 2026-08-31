@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C8E8F0"/>
+      <stop offset="50%" style="stop-color:#A8D8E8"/>
+      <stop offset="100%" style="stop-color:#B8E4D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <circle cx="400" cy="380" r="180" fill="#6BBDD4" opacity="0.3"/>
+  <ellipse cx="400" cy="580" rx="200" ry="80" fill="#6BBDD4" opacity="0.2"/>
+  <text x="400" y="680" font-family="system-ui, sans-serif" font-size="28" fill="#3A9AB5" text-anchor="middle" font-weight="600">foto-hero.jpg</text>
+  <text x="400" y="720" font-family="system-ui, sans-serif" font-size="16" fill="#5A7A85" text-anchor="middle">María Fernanda sonriendo • 800x800px</text>
+  <circle cx="320" cy="340" r="8" fill="#E8F542" opacity="0.6"/>
+  <circle cx="480" cy="320" r="6" fill="#E8F542" opacity="0.5"/>
+  <circle cx="360" cy="420" r="10" fill="#E8F542" opacity="0.4"/>
+  <circle cx="440" cy="440" r="5" fill="#E8F542" opacity="0.7"/>
+</svg>
