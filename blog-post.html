@@ -1278,8 +1278,8 @@
       if (!commentsGrid || !postId) return;
 
       try {
-        const q = query(
         console.log("loadComments: creating query");
+        const q = query(
           collection(db, 'blogComments'),
           where('postId', '==', postId),
           where('aprobado', '==', true),
