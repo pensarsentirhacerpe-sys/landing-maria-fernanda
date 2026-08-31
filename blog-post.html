@@ -821,7 +821,15 @@
   .related-grid { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 480px) {
+  @media (max-width: 480px) { }
+  /* Fix author avatar alignment */
+  .article-meta .author-avatar img {
+      vertical-align: middle;
+  }
+  .article-meta .author-name {
+      margin: 0;
+      line-height: 1;
+  }
   </style>
 </head>
 <body>
