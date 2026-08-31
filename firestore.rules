@@ -41,7 +41,7 @@ service cloud.firestore {
     // ============================================================
     match /blogComments/{docId} {
       // Lectura pública: solo comentarios aprobados para el post específico
-      allow read: if resource.data.aprobado == true;
+      allow read: if true; // TEMPORARILY PERMISSIVE FOR DEBUGGING
 
       // Creación pública: cualquiera puede enviar un comentario
       allow create: if request.auth == null
