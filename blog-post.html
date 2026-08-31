@@ -1272,12 +1272,14 @@
       });
     }
 
+    console.log("loadComments called", postId, !!commentsGrid, !!commentsCount);
     // Cargar comentarios aprobados para este post
     async function loadComments() {
       if (!commentsGrid || !postId) return;
 
       try {
         const q = query(
+        console.log("loadComments: creating query");
           collection(db, 'blogComments'),
           where('postId', '==', postId),
           where('aprobado', '==', true),
@@ -1285,6 +1287,7 @@
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
+          console.log("loadComments: snapshot received", snapshot.size);
           const comments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
           // Actualizar contador
@@ -1296,6 +1299,7 @@
               <div class="empty-comments">
                 <p>Aún no hay comentarios. Sé el primero en compartir tu reflexión.</p>
               </div>
+            console.log("loadComments: setting empty comments");
             `;
           } else {
             commentsGrid.innerHTML = comments.map(comment => {
@@ -1308,6 +1312,7 @@
                 <div class="comment-card">
                   <div class="comment-header">
                     <span class="comment-author">— ${nombreDisplay}</span>
+            console.log("loadComments: setting comments:", comments.length);
                     <time class="comment-date">${fecha}</time>
                   </div>
                   <p class="comment-text">${escapeHtml(comment.texto)}</p>
