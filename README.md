@@ -365,6 +365,36 @@ La carpeta `docs/` contiene documentación de etapas previas del proyecto (por e
 
 ---
 
+## 16. Recent Updates
+
+### Comments Section Fixes (August 2025)
+- **Issue:** The comments section (`#commentsSection`) was not visible on blog post pages despite no console errors.
+- **Root Cause:** The shared `renderArticle()` function (in `blog-renderer.js`) replaces the entire innerHTML of `<article id="articleMain">`, inadvertently removing the statically placed `<section id="commentsSection">` that lived inside that same article element. Although JavaScript variables still referenced the detached DOM node, visual updates had no effect.
+- **Fix Applied:**
+  1. In `blog-post.html`, after calling `renderArticle()` and before loading related posts, the original comments section is reinserted:
+     ```javascript
+     if (commentsSection) {
+       articleMain.appendChild(commentsSection);
+     }
+     ```
+  2. Added error handling to the Firestore `onSnapshot` listener for comments to capture permission or index issues:
+     ```javascript
+     const unsubscribe = onSnapshot(q, (snapshot) => {
+       // … normal processing …
+     }, (error) => {
+       console.error('Error en onSnapshot de comentarios:', error);
+       commentsCount.textContent = 'Error al cargar comentarios';
+       commentsGrid.innerHTML = '<div class="error">Error al cargar comentarios. Intenta de nuevo más tarde.</div>';
+       resolve(unsubscribe); // avoid hanging promise
+     });
+     ```
+  3. Increased CSS selector specificity for layout overrides, changing from `.comments-section > .container` to `#commentsSection > .container` (and similar child selectors) to guarantee they win over the global `.container` flex rules.
+  4. Removed all temporary debug styles and console.log statements that were used during troubleshooting.
+
+These changes ensure that the comments section is correctly rendered, styled, and functional (subject to Firestore rules and indexes).
+
+---
+
 ## 15. Autor
 
 **Henry Paolo Alfaro Sotil** — creador del proyecto.
