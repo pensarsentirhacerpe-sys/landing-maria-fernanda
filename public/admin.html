@@ -687,7 +687,7 @@
         </button>
       </div>
 
-      <p style="text-align:center; margin-top:16px; font-size:13px; opacity:0.6;">Solo cuentas autorizadas: pensarsentirhacer.pe@gmail.com, paolosotil97@gmail.com</p>
+      <p id="authorized-accounts" style="text-align:center; margin-top:16px; font-size:13px; opacity:0.6;">Solo cuentas autorizadas: pensarsentirhacer.pe@gmail.com, paolosotil97@gmail.com</p>
     </div>
   </div>
 
@@ -916,6 +916,12 @@
     const navBtns = document.querySelectorAll('.admin-nav-btn');
     const tabSections = document.querySelectorAll('.admin-section');
     const toastContainer = document.getElementById('toastContainer');
+    const authorizedAccounts = document.getElementById('authorized-accounts');
+
+    // Set authorized accounts text
+    if (authorizedAccounts) {
+      authorizedAccounts.textContent = `Solo cuentas autorizadas: ${ADMIN_EMAILS.join(', ')}`;
+    }
 
     // Google Auth Provider
     const googleProvider = new GoogleAuthProvider();
