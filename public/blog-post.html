@@ -1457,12 +1457,13 @@
         // Load and show comments
         await loadComments();
         console.log("loadComments finished");
-        console.log("showCommentsSection called");
-        showCommentsSection();
 
         // Show article, hide loading
         loadingSkeleton.style.display = 'none';
         articleMain.style.display = 'block';
+
+        console.log("showCommentsSection called");
+        showCommentsSection();
 
       } catch (error) {
         console.error('Error loading post:', error);
