@@ -393,6 +393,31 @@ La carpeta `docs/` contiene documentación de etapas previas del proyecto (por e
 
 These changes ensure that the comments section is correctly rendered, styled, and functional (subject to Firestore rules and indexes).
 
+### Admin Panel and Comments Enhancements (September 2026)
+- **Bug Fixes in admin.html:**
+  1. Fixed comment title display showing "[Post ID: xxx]" by implementing a `blogPostsMap` cache for efficient title lookup from Firebase blogPosts collection.
+  2. Fixed delete button functionality for comments by implementing proper type-based collection routing using `collectionMap` (testimonio→'testimonios', blog→'blogPosts', comment→'blogComments') and corresponding label mapping.
+  3. Verified comment icons were already correct; no changes needed (reported as corrupted SVG paths but were functioning properly).
+- **Visual Improvements to Comments Section:**
+  - Matched comment form styling in blog-post.html to testimonials-form-wrapper (gradient background, border-radius, box-shadow, padding).
+  - Aligned comment-form-title/subtitle typography and spacing with testimonials equivalents.
+  - Enhanced comment-card appearance with proper border and hover effects.
+  - Transformed comments-count into visual badge/pill style.
+  - Added complete star rating CSS and HTML (copied from index.html) to match testimonials styling.
+- **Feature Enhancements:**
+  - Added star rating selection to comment form (optional 1-5 rating, mirrored from testimonials system).
+  - Implemented "ver más" button logic for comment loading (show 5 initially, expand to all).
+  - Added success/error toast notifications on comment submission (slide-in animation, matching testimonials form styling).
+  - Limited comment query to latest 20 comments first (descending fecha) for performance.
+- **Admin Editor Mobile View Fix:**
+  - Fixed mobile view issues in admin-editor.html when using standard template by increasing top padding of `.editor-main` from 20px to 32px in the max-width: 768px media query, preventing content from being hidden behind the sticky header.
+- **Firebase Updates:**
+  - Updated firestore.rules to validate optional `estrellas` field in blogComments create rule (integer 1-5 or null).
+  - Corrected firestore.indexes.json for blogComments compound index to sort by fecha DESCENDING (required for orderBy + limit queries).
+  - Fixed Firebase index error: "FirebaseError: The query requires an index" for comments query by ensuring proper compound index (postId ASC, aprobado ASC, fecha DESC).
+
+All changes have been deployed to production and are live on the custom domain.
+
 ---
 
 ## 15. Autor
