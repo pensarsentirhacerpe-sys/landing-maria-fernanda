@@ -962,6 +962,8 @@
     let currentCommentId = null;
     let currentDeleteId = null;
     let currentDeleteType = null; // 'testimonio', 'blog', o 'comment'
+    let blogPostsMap = {};
+    let lastCommentsDocs = [];
     let unsubscribeTestimonios = null;
     let unsubscribeBlog = null;
     let unsubscribeComments = null;
@@ -1050,6 +1052,7 @@
       const qBlog = query(collection(db, 'blogPosts'), orderBy('fecha', 'desc'));
       unsubscribeBlog = onSnapshot(qBlog, (snapshot) => {
         renderBlog(snapshot.docs);
+        if (lastCommentsDocs.length) renderComments(lastCommentsDocs);
       }, (error) => {
         console.error('Error blog:', error);
         showToast('Error cargando blog', 'error');
@@ -1058,6 +1061,7 @@
       // Comentarios real-time
       const qComments = query(collection(db, 'blogComments'), orderBy('fecha', 'desc'));
       unsubscribeComments = onSnapshot(qComments, (snapshot) => {
+        lastCommentsDocs = snapshot.docs;
         renderComments(snapshot.docs);
       }, (error) => {
         console.error('Error comentarios:', error);
@@ -1116,7 +1120,7 @@
                   <button class="icon-btn" data-action="approve" data-id="${id}" aria-label="Aprobar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button>
                   <button class="icon-btn danger" data-action="reject" data-id="${id}" aria-label="Rechazar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
                 ` : ''}
-                <button class="icon-btn danger" data-action="delete" data-id="${id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                <button class="icon-btn danger" data-action="delete" data-id="${id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2 2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
               </div>
             </td>
           </tr>
@@ -1231,6 +1235,9 @@
     });
 
     function renderBlog(docs) {
+      docs.forEach(d => {
+        blogPostsMap[d.id] = d.data().titulo || 'Sin título';
+      });
       if (docs.length === 0) {
         blogTableBody.innerHTML = `
           <tr><td colspan="6" class="empty-state">
@@ -1262,7 +1269,7 @@
               <div class="action-btns">
                 <button class="icon-btn" data-action="edit" data-id="${id}" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
                 <button class="icon-btn" data-action="view" data-id="${id}" aria-label="Ver en vivo" style="${data.publicado ? '' : 'opacity:0.4;pointer-events:none;' }"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                <button class="icon-btn danger" data-action="delete" data-id="${id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                <button class="icon-btn danger" data-action="delete" data-id="${id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2 2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
               </div>
             </td>
           </tr>
@@ -1309,7 +1316,9 @@
         const nombre = data.anonimo ? (data.nombre ? data.nombre.charAt(0) + '.' : 'Anónimo') : (data.nombre || 'Anónimo');
 
         // Get blog post title for reference
-        const postTitle = data.postId ? `[Post ID: ${data.postId}]` : 'Post desconocido';
+        const postTitle = data.postId
+          ? (blogPostsMap[data.postId] || `Artículo eliminado (ID: ${data.postId})`)
+          : 'Post desconocido';
 
         return `
           <tr data-id="${id}">
@@ -1324,7 +1333,7 @@
             </td>
             <td>
               <div class="action-btns">
-                <button class="icon-btn" data-action="view" data-id="${id}" aria-label="Ver comentario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11-8-11-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="icon-btn" data-action="view" data-id="${id}" aria-label="Ver comentario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                 ${!data.aprobado ? `
                   <button class="icon-btn" data-action="approve" data-id="${id}" aria-label="Aprobar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button>
                   <button class="icon-btn danger" data-action="reject" data-id="${id}" aria-label="Rechazar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
@@ -1441,9 +1450,16 @@
 
     confirmDeleteBtn.addEventListener('click', async () => {
       if (!currentDeleteId || !currentDeleteType) return;
+      const collectionMap = { testimonio: 'testimonios', blog: 'blogPosts', comment: 'blogComments' };
+      const labelMap = { testimonio: 'Testimonio', blog: 'Artículo', comment: 'Comentario' };
+      const targetCollection = collectionMap[currentDeleteType];
+      if (!targetCollection) {
+        console.error('Tipo de eliminación desconocido:', currentDeleteType);
+        return;
+      }
       try {
-        await deleteDoc(doc(db, currentDeleteType === 'testimonio' ? 'testimonios' : 'blogPosts', currentDeleteId));
-        showToast(`${currentDeleteType === 'testimonio' ? 'Testimonio' : 'Artículo'} eliminado`, 'success');
+        await deleteDoc(doc(db, targetCollection, currentDeleteId));
+        showToast(`${labelMap[currentDeleteType]} eliminado`, 'success');
         closeDeleteModalFn();
       } catch (error) {
         console.error('Error eliminando:', error);
