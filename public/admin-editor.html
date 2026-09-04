@@ -328,7 +328,7 @@
       .editor-header-content { flex-direction: column; align-items: flex-start; }
       .editor-actions { width: 100%; }
       .editor-actions .btn { flex: 1; }
-      .editor-main { padding: 20px 16px; }
+      .editor-main { padding: 32px 16px; }
       .editor-panel { padding: 20px 16px; }
     }
     /* Footer — Luxto Style (paridad con index.html) */
@@ -1079,6 +1079,24 @@
       const file = e.target.files[0];
       if (!file) return;
       if (file.size > 5 * 1024 * 1024) { showToast('Archivo muy grande (máx. 5MB)', 'error'); return; }
+
+      // Check image dimensions for mobile optimization warning
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+        // Warn if image is too tall for reasonable mobile display
+        // Assuming we want max height of around 300-400px on mobile
+        if (height > 400) {
+          showToast(`Imagen muy alta (${height}px). Para mejor experiencia en móvil, considera usar imágenes máx. 400px de altura.`, 'warning');
+        }
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(img.src);
+        console.error('Error loading image for dimension check');
+      };
 
       console.log('Subiendo portada:', file.name);
       try {
