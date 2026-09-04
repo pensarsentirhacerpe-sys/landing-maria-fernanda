@@ -1472,6 +1472,11 @@
             console.log("loadComments: snapshot received", snapshot.size);
             const comments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
+            // Inicializar flag para controlar visualización de comentarios (solo si no existe)
+            if (window.showAllCommentsForPost === undefined) {
+              window.showAllCommentsForPost = false;
+            }
+
             // Actualizar contador
             commentsCount.textContent = `${comments.length} ${comments.length === 1 ? 'comentario' : 'comentarios'}`;
 
@@ -1483,31 +1488,70 @@
                   <p>Aún no hay comentarios. Sé el primero en compartir tu reflexión.</p>
                 </div>
               `;
+              // Ocultar botón de ver más si existe
+              const loadMoreBtn = document.getElementById('loadMoreCommentsBtn');
+              if (loadMoreBtn) loadMoreBtn.style.display = 'none';
             } else {
-                commentsGrid.innerHTML = comments.map(comment => {
-                  const fecha = comment.fecha?.toDate ? formatDate(comment.fecha.toDate()) : formatDate(comment.fecha);
-                  console.log("loadComments: building HTML for", comments.length, "comments");
-                  const nombreDisplay = comment.anonimo
-                    ? (comment.nombre ? comment.nombre.charAt(0) + '.' : 'Anónimo')
-                    : (comment.nombre || 'Anónimo');
+              // Determinar cuántos comentarios mostrar inicialmente
+              const showAll = window.showAllCommentsForPost === true;
+              const commentsToShow = showAll ? comments : comments.slice(0, 5);
 
-                  const estrellasHtml = comment.estrellas
-                    ? `<div class="comment-stars">${Array.from({length: 5}, (_, i) =>
-                        `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" ${i < comment.estrellas ? 'style="fill: var(--yellow-deep);"' : ''}/></svg>`
-                      ).join('')}</div>`
-                    : '';
+              commentsGrid.innerHTML = commentsToShow.map(comment => {
+                const fecha = comment.fecha?.toDate ? formatDate(comment.fecha.toDate()) : formatDate(comment.fecha);
+                console.log("loadComments: building HTML for", commentsToShow.length, "comments");
+                const nombreDisplay = comment.anonimo
+                  ? (comment.nombre ? comment.nombre.charAt(0) + '.' : 'Anónimo')
+                  : (comment.nombre || 'Anónimo');
 
-                  return `
-                    <div class="comment-card">
-                      <div class="comment-header">
-                        <span class="comment-author">— ${nombreDisplay}</span>
-                        <time class="comment-date">${fecha}</time>
-                      </div>
-                      ${estrellasHtml}
-                      <p class="comment-text">${escapeHtml(comment.texto)}</p>
+                const estrellasHtml = comment.estrellas
+                  ? `<div class="comment-stars">${Array.from({length: 5}, (_, i) =>
+                      `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" ${i < comment.estrellas ? 'style="fill: var(--yellow-deep);"' : ''}/></svg>`
+                    ).join('')}</div>`
+                  : '';
+
+                return `
+                  <div class="comment-card">
+                    <div class="comment-header">
+                      <span class="comment-author">— ${nombreDisplay}</span>
+                      <time class="comment-date">${fecha}</time>
                     </div>
-                  `;
-                }).join('');
+                    ${estrellasHtml}
+                    <p class="comment-text">${escapeHtml(comment.texto)}</p>
+                  </div>
+                `;
+              }).join('');
+
+              // Mostrar/ocultar botón de ver más
+              const loadMoreBtn = document.getElementById('loadMoreCommentsBtn');
+              if (comments.length > 5) {
+                if (!loadMoreBtn) {
+                  // Crear botón si no existe
+                  const btn = document.createElement('button');
+                  btn.id = 'loadMoreCommentsBtn';
+                  btn.className = 'btn btn-secondary';
+                  btn.textContent = 'Ver más comentarios';
+                  btn.style.display = 'block';
+                  btn.style.margin = '24px auto 0';
+                  btn.style.width = 'fit-content';
+
+                  // Insertar después del commentsGrid
+                  commentsGrid.parentNode.insertBefore(btn, commentsGrid.nextSibling);
+
+                  // Agregar event listener
+                  btn.addEventListener('click', () => {
+                    window.showAllCommentsForPost = !window.showAllCommentsForPost; // Toggle
+                    btn.textContent = window.showAllCommentsForPost ? 'Ocultar comentarios' : 'Ver más comentarios';
+                    // Volver a renderizar para mostrar/ocultar
+                    loadComments(); // Esto volverá a entrar aquí con el flag actualizado
+                  });
+                } else {
+                  // Actualizar texto del botón existente
+                  loadMoreBtn.textContent = window.showAllCommentsForPost ? 'Ocultar comentarios' : 'Ver más comentarios';
+                  loadMoreBtn.style.display = 'block';
+                }
+              } else if (loadMoreBtn) {
+                loadMoreBtn.style.display = 'none';
+              }
             }
 
             // Resolve the promise after we've processed the first snapshot
