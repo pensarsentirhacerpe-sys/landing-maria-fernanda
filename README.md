@@ -13,14 +13,14 @@ Sitio web profesional para **María Fernanda Arana**, psicóloga clínica especi
 | **Frontend** | **GitHub Pages** | HTML/CSS/JS estáticos servidos desde GitHub Pages |
 | **Backend / BaaS** | **Firebase** | Firestore (base de datos) + Firebase Authentication (login admin) |
 | **Imágenes** | **Cloudinary** | Almacenamiento y entrega de imágenes del blog (portadas y contenido) |
-| **Dominio** | **Cloudflare + GitHub Pages** | Pendiente de configuración (ver sección Dominio) |
+| **Dominio** | **Cloudflare + GitHub Pages** | Configurado con dominio personalizado de María Fernanda |
 
 No se utiliza **Firebase Hosting**. El sitio público se sirve exclusivamente desde GitHub Pages.
 
 **Propiedad de los servicios:**
 - Firebase → **María Fernanda**
 - Cloudinary → **María Fernanda**
-- Dominio → será comprado a nombre de **María Fernanda**
+- Dominio → ya comprado y configurado a nombre de **María Fernanda**
 - GitHub → repositorio original en **elbrujo325/landing-maria-fernanda**; María tendrá su propio **fork** como copia/propiedad del código (no se transfiere el repositorio original).
 
 ---
@@ -245,19 +245,21 @@ firebase deploy --only firestore:rules,firestore:indexes --project pagina-web-8a
 
 ---
 
-## 9. Dominio (pendiente)
+## 9. Dominio (configurado)
 
-El dominio aún **no está configurado**. El flujo planificado una vez se compre el dominio a nombre de María Fernanda:
+El dominio personalizado de María Fernanda ya está configurado y funcionando correctamente:
 
 ```
-Cloudflare  →  DNS  →  GitHub Pages  →  Custom Domain  →  HTTPS
+[Dominio Personalizado]  →  Cloudflare (DNS, SSL, CDN)  →  GitHub Pages  →  Sitio público
 ```
 
-1. Comprar el dominio a nombre de María Fernanda.
-2. Configurar el DNS en Cloudflare apuntando a GitHub Pages.
-3. Agregar el *custom domain* en el fork de GitHub Pages.
-4. Hacer cumplir HTTPS.
-5. **Importante:** agregar el dominio final como **Authorized Domain** en Firebase Authentication (si el flujo de login lo requiere); de lo contrario, el popup de login de Google fallará en el nuevo dominio.
+**Configuración actual:**
+- Dominio registrado a nombre de María Fernanda
+- DNS configurado en Cloudflare apuntando a GitHub Pages
+- Custom domain configurado en el repositorio de GitHub Pages
+- HTTPS habilitado y forzado mediante Cloudflare
+- Dominio autorizado en Firebase Authentication para el flujo de login de Google
+- Todas las pruebas de funcionalidad realizadas exitosamente con el dominio personalizado
 
 ---
 
@@ -277,10 +279,10 @@ Dado que la lista de admins está en las reglas, cualquier alta de un nuevo admi
 1. **María** crea (o usa) su cuenta de GitHub.
 2. **María** hace un **fork** del repositorio original `elbrujo325/landing-maria-fernanda`. Su fork es su copia/propiedad del código.
 3. Se configura **GitHub Pages** en el fork de María (a partir de la carpeta `public/`).
-4. Se compra/configura el **dominio** a nombre de María.
-5. Se configura el **DNS en Cloudflare**.
-6. Se conecta el **dominio a GitHub Pages** (custom domain + HTTPS).
-7. Se configura el **dominio autorizado en Firebase Authentication** (si el login lo requiere).
+4. Se verifica que el **dominio** ya esté comprado y configurado a nombre de María.
+5. Se verifica que el **DNS en Cloudflare** esté correctamente configurado.
+6. Se verifica que el **dominio esté conectado a GitHub Pages** (custom domain + HTTPS) y funcionando correctamente.
+7. Se verifica que el **dominio autorizado en Firebase Authentication** esté correctamente configurado (si el login lo requiere).
 8. Se **prueban** todas las funcionalidades (landing, blog, testimonios, admin, imágenes).
 9. **María valida y acepta** la entrega.
 10. **Paolo retira su acceso de Firebase** (su email se elimina de `isAdmin()` y de `ADMIN_EMAILS`, y se retira su membresía del proyecto Firebase).
@@ -304,9 +306,9 @@ Paolo es colaborador técnico de Firebase **durante el desarrollo**: configuraci
 - [ ] GitHub Pages funcionando en el fork
 
 **Dominio**
-- [ ] Dominio comprado a nombre de María
-- [ ] DNS configurado (Cloudflare)
-- [ ] HTTPS funcionando
+- [x] Dominio comprado a nombre de María
+- [x] DNS configurado (Cloudflare)
+- [x] HTTPS funcionando
 
 **Firebase**
 - [ ] Authentication funcionando
