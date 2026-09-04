@@ -918,6 +918,65 @@
   stroke-width: 1;
 }
 
+/* ESTRELLAS - Copiado exactamente de index.html */
+.rating-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rating-fieldset legend {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.star-rating label svg {
+  width: 36px;
+  height: 36px;
+  fill: var(--celeste-light);
+  stroke: var(--celeste-mid);
+  stroke-width: 1;
+  transition: all 0.2s ease;
+}
+
+.star-rating input:checked ~ label svg,
+.star-rating label:hover svg,
+.star-rating label:hover ~ label svg {
+  fill: var(--yellow-deep);
+  stroke: var(--yellow-deep);
+  transform: scale(1.1);
+}
+
+.star-rating input:focus-visible + label svg {
+  outline: 2px solid var(--celeste-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .empty-comments {
   text-align: center;
   padding: 32px 16px;
