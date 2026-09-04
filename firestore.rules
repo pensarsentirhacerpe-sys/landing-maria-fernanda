@@ -52,6 +52,10 @@ service cloud.firestore {
         && (request.resource.data.nombre == null ||
             request.resource.data.nombre is string &&
             request.resource.data.nombre.size() <= 100)
+        && (request.resource.data.estrellas == null ||
+            (request.resource.data.estrellas is int &&
+             request.resource.data.estrellas >= 1 &&
+             request.resource.data.estrellas <= 5))
         && request.resource.data.aprobado == false;
 
       // Acceso total para administradores

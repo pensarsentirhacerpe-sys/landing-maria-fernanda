@@ -31,7 +31,7 @@
       "fields": [
         { "fieldPath": "postId", "order": "ASCENDING" },
         { "fieldPath": "aprobado", "order": "ASCENDING" },
-        { "fieldPath": "fecha", "order": "ASCENDING" }
+        { "fieldPath": "fecha", "order": "DESCENDING" }
       ]
     }
   ],
