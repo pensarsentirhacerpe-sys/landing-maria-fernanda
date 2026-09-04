@@ -1462,7 +1462,8 @@
           collection(db, 'blogComments'),
           where('postId', '==', postId),
           where('aprobado', '==', true),
-          orderBy('fecha', 'asc')
+          orderBy('fecha', 'desc'),
+          limit(20)
         );
 
         // Wait for the initial snapshot to resolve
