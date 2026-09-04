@@ -1388,6 +1388,12 @@
             <strong>Comentario:</strong>
             <p style="margin-top: 8px; padding: 16px; background: var(--cream); border-radius: 12px; line-height: 1.7; white-space: pre-wrap;">${escapeHtml(data.texto)}</p>
           </div>
+          ${data.estrellas ? `
+            <div class="info-row">
+              <strong>Calificación:</strong>
+              <span class="stars" style="font-size: 18px;">${'★'.repeat(data.estrellas)}${'☆'.repeat(5 - data.estrellas)}</span>
+            </div>
+          ` : ''}
         </div>
       `;
 
