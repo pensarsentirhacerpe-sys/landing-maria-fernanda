@@ -106,11 +106,12 @@ function buildMeta(fecha) {
     <div class="article-meta">
       <div class="author">
         <span class="author-avatar">
-          <img src="assets/images/foto-fernanda-72.webp"
+          <img src="assets/images/foto-fernanda-square.png"
                srcset="assets/images/foto-fernanda-72.webp 72w,
                        assets/images/foto-fernanda-108.webp 108w,
-                       assets/images/foto-fernanda-144.webp 144w"
-               sizes="32px"
+                       assets/images/foto-fernanda-144.webp 144w,
+                       assets/images/foto-fernanda-216.webp 216w"
+               sizes="40px"
                alt="María Fernanda Arana"
                loading="lazy">
         </span>
