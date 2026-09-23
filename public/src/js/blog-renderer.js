@@ -105,15 +105,16 @@ function buildMeta(fecha) {
   return `
     <div class="article-meta">
       <div class="author">
-        <span class="author-avatar">
+        <span class="author-avatar" style="width:48px;height:48px;background:var(--cream);">
           <img src="assets/images/foto-fernanda-square.png"
                srcset="assets/images/foto-fernanda-72.webp 72w,
                        assets/images/foto-fernanda-108.webp 108w,
                        assets/images/foto-fernanda-144.webp 144w,
                        assets/images/foto-fernanda-216.webp 216w"
-               sizes="40px"
+               sizes="48px"
                alt="María Fernanda Arana"
-               loading="lazy">
+               loading="lazy"
+               style="object-fit:contain;">
         </span>
         <span class="author-name">María Fernanda Arana</span>
       </div>
