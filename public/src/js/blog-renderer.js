@@ -114,7 +114,7 @@ function buildMeta(fecha) {
                sizes="48px"
                alt="María Fernanda Arana"
                loading="lazy"
-               style="object-fit:contain;width:100%;height:100%;display:block;">
+               style="object-fit:contain;object-position:center 25%;width:100%;height:100%;display:block;">
         </span>
         <span class="author-name">María Fernanda Arana</span>
       </div>
