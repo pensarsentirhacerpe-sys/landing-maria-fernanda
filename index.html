@@ -9,8 +9,16 @@
   <link rel="apple-touch-icon" href="assets/logos/logo-blanco-transparente.png">
   <meta name="theme-color" content="#6FC1FF">
   <meta name="description" content="Psicóloga clínica ACT, especialista en bienestar emocional. +7 años de experiencia, +12 países. Terapia online y presencial en Lima.">
+  <!-- Permissions Policy to address web-share warning -->
+  <meta http-equiv="Permissions-Policy" content="web-share=*, fullscreen=*, accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()">
+  <!-- Security headers for CORS and content loading -->
+  <meta http-equiv="Cross-Origin-Embedder-Policy" content="unsafe-none">
+  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups">
+  <meta http-equiv="Cross-Origin-Resource-Policy" content="cross-origin">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://w.behold.so" crossorigin>
+  <link rel="preconnect" href="https://scontent.cdninstagram.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Glacial+Indifference:ital,wght@0,400;0,700;1,400;1,700&family=League+Spartan:wght@400;500;600;700&family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
   <style>
         :root {
@@ -5192,7 +5200,7 @@
               <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
               <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
               <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </div>
             <p class="testimonio-text">"La terapia de pareja nos salvó. Aprendimos a comunicarnos sin pelearnos y a entendernos desde la vulnerabilidad. Fernanda es increíblemente empática y directa a la vez."</p>
             <div class="testimonio-author">— Ana L. & Roberto M.</div>
@@ -5395,12 +5403,39 @@
 
       <!-- BEHOLD.SO EMBED FULL WIDTH -->
       <div class="behold-embed" style="max-width:1200px;margin:40px auto 0;">
-        <behold-widget feed-id="f3iCsyczfQDU1RhPg0Js"></behold-widget>
+        <behold-widget feed-id="f3iCsyczfQDU1RhPg0Js" theme="light" layout="grid" columns="3" gap="16" border-radius="12" background="transparent" loading="lazy"></behold-widget>
+        <!-- Fallback for when behold widget fails to load -->
+        <div class="behold-fallback" style="display:none; text-align:center; padding:40px; color:var(--text-dark); opacity:0.7;">
+          <p>Contenido de Instagram no disponible en este momento</p>
+          <a href="https://instagram.com/pensarsentirhacer.pe" target="_blank" rel="noopener noreferrer" style="color:var(--celeste-deep);font-weight:600;text-decoration:underline;">Ver en Instagram →</a>
+        </div>
         <script>
           (() => {
             if(window._bhldScript)return;window._bhldScript=true;
             const d=document,s=d.createElement("script");s.type="module";
-            s.src="https://w.behold.so/widget.js";setTimeout(()=>{d.head.append(s);},0);
+            s.src="https://w.behold.so/widget.js";
+            s.onerror = () => {
+              console.warn('Behold widget failed to load');
+              const fallback = document.querySelector('.behold-fallback');
+              if(fallback) fallback.style.display = 'block';
+            };
+            s.onload = () => {
+              // Check if widget rendered after 3 seconds
+              setTimeout(() => {
+                const widget = document.querySelector('behold-widget');
+                // Check if widget has rendered content (either in light DOM or shadow DOM)
+                const hasContent = (widget && (
+                  (widget.shadowRoot && widget.shadowRoot.querySelector('*')) ||
+                  widget.querySelector('*') ||
+                  widget.children.length > 0
+                ));
+                if(!hasContent) {
+                  const fallback = document.querySelector('.behold-fallback');
+                  if(fallback) fallback.style.display = 'block';
+                }
+              }, 3000);
+            };
+            d.head.append(s);
           })();
         </script>
       </div>
