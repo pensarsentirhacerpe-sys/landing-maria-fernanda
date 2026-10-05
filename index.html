@@ -588,9 +588,6 @@
       overflow: hidden;
       box-shadow: 0 25px 70px rgba(111, 193, 255, 0.35);
       transition: none;
-      will-change: transform;
-      backface-visibility: hidden;
-      transform: translateZ(0);
     }
 
     .hero-photo img {
@@ -5684,54 +5681,18 @@
       }
     }
 
-    let ticking = false;
-    let lastScrollY = 0;
-
     function updateScrollEffects() {
       const scrollY = window.scrollY;
-      lastScrollY = scrollY;
       updateNavbarTheme(scrollY);
 
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          if (heroSection && heroPhoto) {
-            const heroHeight = heroSection.offsetHeight;
-            if (lastScrollY < heroHeight) {
-              // Smooth parallax with reduced intensity
-              const parallaxY = lastScrollY * 0.2;
-              heroPhoto.style.transform = `translate3d(0, ${parallaxY}px, 0)`;
-            }
-          }
-
-          if (mobileStickyCta && heroSection) {
-            if (window.innerWidth <= 768) {
-              const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
-              if (lastScrollY > heroBottom - 100) {
-                mobileStickyCta.classList.add('visible');
-                mobileStickyCta.setAttribute('aria-hidden', 'false');
-              } else {
-                mobileStickyCta.classList.remove('visible');
-                mobileStickyCta.setAttribute('aria-hidden', 'true');
-              }
-            } else {
-              mobileStickyCta.classList.remove('visible');
-              mobileStickyCta.setAttribute('aria-hidden', 'true');
-            }
-          }
-
-          if (whatsappFloat) {
-            if (window.innerWidth <= 768 && mobileStickyCta && mobileStickyCta.classList.contains('visible')) {
-              whatsappFloat.style.bottom = '85px';
-            } else {
-              whatsappFloat.style.bottom = '18px';
-            }
-          }
-
-          ticking = false;
-        });
+      if (heroSection && heroPhoto) {
+        const heroHeight = heroSection.offsetHeight;
+        if (scrollY < heroHeight) {
+          heroPhoto.style.transform = `translateY(${scrollY * 0.3}px)`;
+        }
       }
-    }
+
+      if (mobileStickyCta && heroSection) {
         if (window.innerWidth <= 768) {
           const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
           if (scrollY > heroBottom - 100) {
