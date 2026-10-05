@@ -5404,37 +5404,11 @@
       <!-- BEHOLD.SO EMBED FULL WIDTH -->
       <div class="behold-embed" style="max-width:1200px;margin:40px auto 0;">
         <behold-widget feed-id="f3iCsyczfQDU1RhPg0Js" theme="light" layout="grid" columns="3" gap="16" border-radius="12" background="transparent" loading="lazy"></behold-widget>
-        <!-- Fallback for when behold widget fails to load -->
-        <div class="behold-fallback" style="display:none; text-align:center; padding:40px; color:var(--text-dark); opacity:0.7;">
-          <p>Contenido de Instagram no disponible en este momento</p>
-          <a href="https://instagram.com/pensarsentirhacer.pe" target="_blank" rel="noopener noreferrer" style="color:var(--celeste-deep);font-weight:600;text-decoration:underline;">Ver en Instagram →</a>
-        </div>
         <script>
           (() => {
             if(window._bhldScript)return;window._bhldScript=true;
             const d=document,s=d.createElement("script");s.type="module";
             s.src="https://w.behold.so/widget.js";
-            s.onerror = () => {
-              console.warn('Behold widget failed to load');
-              const fallback = document.querySelector('.behold-fallback');
-              if(fallback) fallback.style.display = 'block';
-            };
-            s.onload = () => {
-              // Check if widget rendered after 3 seconds
-              setTimeout(() => {
-                const widget = document.querySelector('behold-widget');
-                // Check if widget has rendered content (either in light DOM or shadow DOM)
-                const hasContent = (widget && (
-                  (widget.shadowRoot && widget.shadowRoot.querySelector('*')) ||
-                  widget.querySelector('*') ||
-                  widget.children.length > 0
-                ));
-                if(!hasContent) {
-                  const fallback = document.querySelector('.behold-fallback');
-                  if(fallback) fallback.style.display = 'block';
-                }
-              }, 3000);
-            };
             d.head.append(s);
           })();
         </script>
